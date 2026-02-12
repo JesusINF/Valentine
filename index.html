@@ -2,21 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>¿Quieres ser mi Valentine?</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
         }
 
         body {
-            width: 100%;
-            height: 100vh;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -24,9 +33,11 @@
 
         /* Pantalla de inicio */
         .start-screen {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 100%;
+            top: 0;
+            left: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             flex-direction: column;
@@ -34,36 +45,25 @@
             align-items: center;
             gap: 40px;
             z-index: 100;
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.5s ease;
+        }
+
+        .start-screen.hidden {
             opacity: 0;
             pointer-events: none;
         }
 
-        .start-screen.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        @media (max-width: 768px) {
-            .start-screen {
-                gap: 30px;
-            }
-        }
-
         .start-text {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: white;
             text-align: center;
             text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             animation: pulse 2s ease-in-out infinite;
             line-height: 1.4;
-        }
-
-        @media (max-width: 768px) {
-            .start-text {
-                font-size: 2rem;
-                padding: 0 20px;
-            }
+            padding: 0 20px;
         }
 
         .frog-container {
@@ -73,28 +73,77 @@
             animation: bounce 1.5s ease-in-out infinite;
         }
 
-        @media (max-width: 768px) {
-            .frog-container {
-                width: 100px;
-                height: 100px;
-            }
-        }
-
         .frog {
             width: 100%;
             height: 100%;
-            background-image: url('keroppi.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+            background: linear-gradient(135deg, #7FD857 0%, #5CB85C 50%, #7FD857 100%);
+            border-radius: 60% 60% 50% 50%;
             position: relative;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25), inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+            border: 2px solid #4CAF50;
         }
 
-        .eye,
-        .pupil,
-        .mouth,
+        .eye {
+            position: absolute;
+            width: 24px;
+            height: 32px;
+            background: #fff;
+            border: 2px solid #4CAF50;
+            border-radius: 50%;
+            top: 20px;
+            box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .eye.left {
+            left: 20px;
+        }
+
+        .eye.right {
+            right: 20px;
+        }
+
+        .pupil {
+            position: absolute;
+            width: 10px;
+            height: 14px;
+            background: #333;
+            border-radius: 50%;
+            top: 9px;
+            left: 7px;
+        }
+
+        .mouth {
+            position: absolute;
+            width: 35px;
+            height: 18px;
+            border: 2.5px solid #4CAF50;
+            border-top: none;
+            border-radius: 0 0 35px 35px;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .leg {
-            display: none;
+            position: absolute;
+            bottom: -8px;
+            width: 28px;
+            height: 38px;
+            background: linear-gradient(135deg, #7FD857 0%, #5CB85C 100%);
+            border-radius: 50% 50% 45% 45%;
+            border: 2px solid #4CAF50;
+            box-shadow: inset -1px -1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .leg.front-left {
+            left: 15px;
+            animation: hopLeft 1.5s ease-in-out infinite;
+        }
+
+        .leg.front-right {
+            right: 15px;
+            animation: hopRight 1.5s ease-in-out infinite;
         }
 
         @keyframes bounce {
@@ -124,9 +173,12 @@
 
         /* Contenedor principal */
         .container {
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1;
         }
 
         /* Fondo animado con corazones */
@@ -194,21 +246,13 @@
             transform: translate(-50%, -50%) scale(0);
             background: white;
             border-radius: 30px;
-            padding: 60px 40px;
+            padding: 50px 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
             z-index: 50;
             max-width: 500px;
             width: 90%;
             opacity: 0;
-        }
-
-        @media (max-width: 768px) {
-            .card {
-                padding: 40px 20px;
-                border-radius: 20px;
-                max-width: 90%;
-            }
         }
 
         .card.show {
@@ -227,43 +271,29 @@
         }
 
         .card-emoji {
-            font-size: 80px;
-            margin-bottom: 20px;
+            font-size: 60px;
+            margin-bottom: 15px;
             animation: bounce 1.5s ease-in-out infinite;
         }
 
-        @media (max-width: 768px) {
-            .card-emoji {
-                font-size: 60px;
-                margin-bottom: 15px;
-            }
-        }
-
         .card-title {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: #764ba2;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             font-weight: 700;
             letter-spacing: -0.5px;
         }
 
-        @media (max-width: 768px) {
-            .card-title {
-                font-size: 1.6rem;
-                margin-bottom: 30px;
-            }
-        }
-
         .card-buttons {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 15px 40px;
-            font-size: 1.1rem;
+            padding: 12px 30px;
+            font-size: 1rem;
             font-weight: 600;
             border: none;
             border-radius: 50px;
@@ -273,14 +303,6 @@
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             opacity: 1;
-        }
-
-        @media (max-width: 768px) {
-            .btn {
-                padding: 12px 30px;
-                font-size: 0.9rem;
-                letter-spacing: 0.5px;
-            }
         }
 
         .btn-yes {
@@ -308,20 +330,11 @@
             pointer-events: none;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         /* Fuegos artificiales */
         .fireworks {
-            position: absolute;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             z-index: 60;
@@ -354,7 +367,7 @@
             transform: translate(-50%, -50%) scale(0);
             background: white;
             border-radius: 30px;
-            padding: 60px 40px;
+            padding: 50px 40px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
             z-index: 70;
@@ -363,29 +376,14 @@
             opacity: 0;
         }
 
-        @media (max-width: 768px) {
-            .thank-you-card {
-                padding: 40px 20px;
-                border-radius: 20px;
-                max-width: 90%;
-            }
-        }
-
         .thank-you-card.show {
             animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
         .thank-you-emoji {
-            font-size: 100px;
-            margin-bottom: 30px;
+            font-size: 70px;
+            margin-bottom: 20px;
             animation: spin 2s linear infinite;
-        }
-
-        @media (max-width: 768px) {
-            .thank-you-emoji {
-                font-size: 70px;
-                margin-bottom: 20px;
-            }
         }
 
         @keyframes spin {
@@ -394,7 +392,7 @@
         }
 
         .thank-you-title {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             color: #764ba2;
             margin-bottom: 20px;
             font-weight: 700;
@@ -404,34 +402,26 @@
             background-clip: text;
         }
 
-        @media (max-width: 768px) {
-            .thank-you-title {
-                font-size: 1.8rem;
-            }
-        }
-
         .thank-you-text {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #555;
             line-height: 1.6;
             margin-bottom: 30px;
-        }
-
-        @media (max-width: 768px) {
-            .thank-you-text {
-                font-size: 1rem;
-            }
         }
 
         .thank-you-hearts {
             display: flex;
             justify-content: center;
             gap: 15px;
-            font-size: 2.5rem;
+            font-size: 2rem;
         }
 
         .heart-icon {
-            animation: heartBeat 1.2s ease-in-out infinite;
+            animation: heartBeat 1s ease-in-out infinite;
+        }
+
+        .heart-icon:nth-child(1) {
+            animation-delay: 0s;
         }
 
         .heart-icon:nth-child(2) {
@@ -449,33 +439,21 @@
 
         /* Ranas decorativas */
         .frog-decoration {
-            position: absolute;
+            position: fixed;
             z-index: 10;
         }
 
         .frog-decoration.top-left {
-            top: 40px;
-            left: 40px;
+            top: 30px;
+            left: 20px;
             animation: wiggle 3s ease-in-out infinite;
         }
 
         .frog-decoration.bottom-right {
-            bottom: 40px;
-            right: 40px;
+            bottom: 30px;
+            right: 20px;
             animation: wiggle 3s ease-in-out infinite;
             animation-delay: 1.5s;
-        }
-
-        @media (max-width: 768px) {
-            .frog-decoration.top-left {
-                top: 20px;
-                left: 20px;
-            }
-
-            .frog-decoration.bottom-right {
-                bottom: 20px;
-                right: 20px;
-            }
         }
 
         @keyframes wiggle {
@@ -483,11 +461,177 @@
             25% { transform: rotate(-5deg); }
             75% { transform: rotate(5deg); }
         }
+
+        /* Media queries para móvil */
+        @media (max-width: 768px) {
+            .start-text {
+                font-size: 1.5rem;
+            }
+
+            .card {
+                padding: 35px 25px;
+                border-radius: 20px;
+            }
+
+            .card-emoji {
+                font-size: 50px;
+                margin-bottom: 10px;
+            }
+
+            .card-title {
+                font-size: 1.3rem;
+                margin-bottom: 20px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                letter-spacing: 0.5px;
+            }
+
+            .card-buttons {
+                gap: 10px;
+            }
+
+            .thank-you-card {
+                padding: 35px 25px;
+                border-radius: 20px;
+            }
+
+            .thank-you-emoji {
+                font-size: 50px;
+                margin-bottom: 15px;
+            }
+
+            .thank-you-title {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+            }
+
+            .thank-you-text {
+                font-size: 0.95rem;
+            }
+
+            .thank-you-hearts {
+                gap: 10px;
+                font-size: 1.5rem;
+            }
+
+            .frog-container {
+                width: 80px;
+                height: 80px;
+            }
+
+            .frog-decoration.top-left {
+                top: 20px;
+                left: 15px;
+            }
+
+            .frog-decoration.bottom-right {
+                bottom: 20px;
+                right: 15px;
+            }
+
+            .heart {
+                width: 30px;
+                height: 30px;
+            }
+
+            .heart::before,
+            .heart::after {
+                width: 30px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .start-text {
+                font-size: 1.2rem;
+            }
+
+            .card {
+                padding: 30px 20px;
+                max-width: 95%;
+            }
+
+            .card-emoji {
+                font-size: 40px;
+                margin-bottom: 8px;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .thank-you-card {
+                padding: 30px 20px;
+                max-width: 95%;
+            }
+
+            .thank-you-emoji {
+                font-size: 40px;
+            }
+
+            .thank-you-title {
+                font-size: 1.1rem;
+            }
+
+            .frog-container {
+                width: 70px;
+                height: 70px;
+            }
+
+            .eye {
+                width: 18px;
+                height: 24px;
+                top: 15px;
+            }
+
+            .eye.left {
+                left: 15px;
+            }
+
+            .eye.right {
+                right: 15px;
+            }
+
+            .pupil {
+                width: 8px;
+                height: 10px;
+                top: 7px;
+                left: 5px;
+            }
+
+            .mouth {
+                width: 25px;
+                height: 12px;
+                bottom: 8px;
+            }
+
+            .leg {
+                width: 20px;
+                height: 28px;
+            }
+
+            .leg.front-left {
+                left: 12px;
+            }
+
+            .leg.front-right {
+                right: 12px;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Pantalla de inicio -->
-    <div class="start-screen active">
+    <div class="start-screen" id="startScreen">
         <div class="start-text">Presiona cualquier tecla o la pantalla</div>
         <div class="frog-container">
             <div class="frog">
@@ -511,7 +655,7 @@
 
         <!-- Ranas decorativas -->
         <div class="frog-decoration top-left">
-            <div class="frog-container" style="width: 80px; height: 80px;">
+            <div class="frog-container">
                 <div class="frog">
                     <div class="eye left">
                         <div class="pupil"></div>
@@ -527,7 +671,7 @@
         </div>
 
         <div class="frog-decoration bottom-right">
-            <div class="frog-container" style="width: 80px; height: 80px;">
+            <div class="frog-container">
                 <div class="frog">
                     <div class="eye left">
                         <div class="pupil"></div>
@@ -570,7 +714,7 @@
 
     <script>
         // Variables globales
-        const startScreen = document.querySelector('.start-screen');
+        const startScreen = document.getElementById('startScreen');
         const mainCard = document.getElementById('mainCard');
         const thankYouCard = document.getElementById('thankYouCard');
         const btnYes = document.getElementById('btnYes');
@@ -677,7 +821,7 @@
 
         // También permitir click para empezar
         document.addEventListener('click', (e) => {
-            if (!gameStarted && !e.target.closest('.card') && !e.target.closest('.thank-you-card')) {
+            if (!gameStarted && !e.target.closest('.card') && !e.target.closest('.thank-you-card') && !e.target.closest('.btn')) {
                 startGame();
             }
         });
@@ -685,15 +829,12 @@
         function startGame() {
             if (gameStarted) return;
             gameStarted = true;
-            startScreen.classList.remove('active');
+            startScreen.classList.add('hidden');
             
-            // Mostrar el card principal inmediatamente
+            // Mostrar corazones y card principal inmediatamente
             createFloatingHearts();
             mainCard.classList.add('show');
         }
-
-        // Crear los corazones iniciales en background (aunque estén ocultos)
-        createFloatingHearts();
     </script>
 </body>
 </html>
